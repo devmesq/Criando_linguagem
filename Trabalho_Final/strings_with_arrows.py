@@ -1,4 +1,4 @@
-def string_com_setas(texto, posicao_inicial, posicao_final):
+def strings_with_arrows(texto, posicao_inicial, posicao_final):
     resultado = ''
 
     # Calcular índices

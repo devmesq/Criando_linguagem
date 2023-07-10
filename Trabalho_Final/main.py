@@ -1,19 +1,12 @@
-
-#######################################
-# IMPORTAR
-#######################################
+# IMPORTANDO A BIBLIOTECA
 
 from strings_with_arrows import *
 
-#######################################
 # CONSTANTES
-#######################################
 
 DIGITOS = '0123456789'
 
-#######################################
-# ERRO
-#######################################
+# ERROS
 
 class Erro:
 	def __init__(self, posicao_inicial, posicao_final, nome_erro, detalhes):
@@ -28,42 +21,15 @@ class Erro:
 		resultado += '\n\n' + string_with_arrows(self.posicao_inicial.ftxt, self.posicao_inicial, self.posicao_final)
 		return resultado
 
-	class ErroCaractereIlegal(Erro):
-		def __init__(self, posicao_inicial, posicao_final, detalhes):
-			super().__init__(posicao_inicial, posicao_final, 'Caractere Ilegal', detalhes)
+class ErroCaractereIlegal(Erro):
+	def __init__(self, posicao_inicial, posicao_final, detalhes):
+		super().__init__(posicao_inicial, posicao_final, 'Caractere Ilegal', detalhes)
 
-	class ErroSintaxeInvalida(Erro):
-		def __init__(self, posicao_inicial, posicao_final, detalhes=''):
-			super().__init__(posicao_inicial, posicao_final, 'Sintaxe Inválida', detalhes)
+class ErroSintaxeInvalida(Erro):
+	def __init__(self, posicao_inicial, posicao_final, detalhes=''):
+		super().__init__(posicao_inicial, posicao_final, 'Sintaxe Inválida', detalhes)
 
-	class ErroTempoExecucao(Erro):
-		def __init__(self, posicao_inicial, posicao_final, detalhes, contexto):
-			super().__init__(posicao_inicial, posicao_final, 'Erro de Tempo de Execução', detalhes)
-			self.contexto = contexto
-
-	def como_string(self):
-		resultado  = self.gerar_rastreamento()
-		resultado += f'{self.nome_erro}: {self.detalhes}'
-		resultado += '\n\n' + strings_with_arrows(self.posicao_inicial.ftxt, self.posicao_inicial, self.posicao_final)
-		return resultado
-
-	def gerar_rastreamento(self):
-		resultado = ''
-		posicao = self.posicao_inicial
-		ctx = self.contexto
-
-		while ctx:
-			resultado = f'  Arquivo {posicao.fn}, linha {str(posicao.ln + 1)}, em {ctx.nome_exibicao}\n' + resultado
-			posicao = ctx.posicao_entrada_pai
-			ctx = ctx.pai
-
-		return 'Rastreamento (chamada mais recente por último):\n' + resultado
-
-
-#######################################
 # POSICAO
-#######################################
-
 class Posicao:
 	def __init__(self, idx, ln, col, fn, ftxt):
 		self.idx = idx
@@ -86,21 +52,17 @@ class Posicao:
 		return Posicao(self.idx, self.ln, self.col, self.fn, self.ftxt)
 
 
-#######################################
-# TOKENS
-#######################################
+# DEFININDO OS TOKENS
 
-
-
-TT_INT     = 'INT'
 TT_FLOAT   = 'FLOAT'
-TT_PLUS    = 'MAIS'
-TT_MINUS   = 'MENOS'
-TT_MUL     = 'MULTIPLICACAO'
-TT_DIV     = 'DIVISAO'
-TT_LPAREN  = 'ABRE_PARENTESES'
-TT_RPAREN  = 'FECHA_PARENTESES'
-TT_EOF     = 'FIM_DE_ARQUIVO'
+TT_INT     = 'INT'
+TT_MENOS   = 'MENOS'
+TT_MAIS    = 'MAIS'
+TT_DIVISAO     = 'DIVISAO'
+TT_MULTIPLICACAO     = 'MULTIPLICACAO'
+TT_ABRE_PARENTESES  = 'ABRE_PARENTESES'
+TT_FECHA_PARENTESES  = 'FECHA_PARENTESES'
+TT_FIM_DE_ARQUIVO     = 'FIM_DE_ARQUIVO'
 
 class Token:
 	def __init__(self, tipo, valor=None, posicao_inicio=None, posicao_fim=None):
@@ -120,10 +82,7 @@ class Token:
 			return f'{self.tipo}:{self.valor}'
 		return f'{self.tipo}'
 
-
-#######################################
 # LEXER
-#######################################
 
 class Lexer:
 	def __init__(self, fn, texto):
@@ -145,17 +104,17 @@ class Lexer:
 				self.avancar()
 			elif self.caractere_atual in DIGITOS:
 				tokens.append(self.criar_numero())
-			elif self.caractere_atual == '+':
-				tokens.append(Token(TT_MAIS, pos_start=self.pos))
-				self.avancar()
 			elif self.caractere_atual == '-':
 				tokens.append(Token(TT_MENOS, pos_start=self.pos))
 				self.avancar()
-			elif self.caractere_atual == '*':
-				tokens.append(Token(TT_MULTIPLICACAO, pos_start=self.pos))
+			elif self.caractere_atual == '+':
+				tokens.append(Token(TT_MAIS, pos_start=self.pos))
 				self.avancar()
 			elif self.caractere_atual == '/':
 				tokens.append(Token(TT_DIVISAO, pos_start=self.pos))
+				self.avancar()
+			elif self.caractere_atual == '*':
+				tokens.append(Token(TT_MULTIPLICACAO, pos_start=self.pos))
 				self.avancar()
 			elif self.caractere_atual == '(':
 				tokens.append(Token(TT_ABRE_PARENTESES, pos_start=self.pos))
@@ -187,15 +146,12 @@ class Lexer:
 				num_str += self.caractere_atual
 			self.avancar()
 
-		if contagem_ponto == 0:
-			return Token(TT_INT, int(num_str), pos_start, self.pos)
-		else:
+		if contagem_ponto != 0:
 			return Token(TT_FLOAT, float(num_str), pos_start, self.pos)
-
-
-#######################################
+		else:
+			return Token(TT_INT, int(num_str), pos_start, self.pos)
+		
 # NODES
-#######################################
 
 class NoNumero:
 	def __init__(self, tok):
