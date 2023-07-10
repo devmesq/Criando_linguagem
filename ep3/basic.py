@@ -3,13 +3,13 @@
 # IMPORTAR
 #######################################
 
-from string_com_setas import *
+from strings_com_setas import *
 
 #######################################
 # CONSTANTES
 #######################################
 
-DIGITO = '0123456789'
+DIGITOS = '0123456789'
 
 #######################################
 # ERRO
@@ -29,17 +29,17 @@ class Erro:
 		return resultado
 
 	class ErroCaractereIlegal(Erro):
-	def __init__(self, posicao_inicial, posicao_final, detalhes):
-		super().__init__(posicao_inicial, posicao_final, 'Caractere Ilegal', detalhes)
+		def __init__(self, posicao_inicial, posicao_final, detalhes):
+			super().__init__(posicao_inicial, posicao_final, 'Caractere Ilegal', detalhes)
 
 	class ErroSintaxeInvalida(Erro):
-	def __init__(self, posicao_inicial, posicao_final, detalhes=''):
-		super().__init__(posicao_inicial, posicao_final, 'Sintaxe Inválida', detalhes)
+		def __init__(self, posicao_inicial, posicao_final, detalhes=''):
+			super().__init__(posicao_inicial, posicao_final, 'Sintaxe Inválida', detalhes)
 
 	class ErroTempoExecucao(Erro):
-	def __init__(self, posicao_inicial, posicao_final, detalhes, contexto):
-		super().__init__(posicao_inicial, posicao_final, 'Erro de Tempo de Execução', detalhes)
-		self.contexto = contexto
+		def __init__(self, posicao_inicial, posicao_final, detalhes, contexto):
+			super().__init__(posicao_inicial, posicao_final, 'Erro de Tempo de Execução', detalhes)
+			self.contexto = contexto
 
 	def como_string(self):
 		resultado  = self.gerar_rastreamento()
@@ -172,7 +172,7 @@ class Lexer:
 		tokens.append(Token(TT_FIM_DE_ARQUIVO, pos_start=self.pos))
 		return tokens, None
 
-		def criar_numero(self):
+	def criar_numero(self):
 		num_str = ''
 		contagem_ponto = 0
 		pos_start = self.pos.copiar()
