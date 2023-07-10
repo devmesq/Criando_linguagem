@@ -342,22 +342,23 @@ class AnalisadorSintatico:
 # RUNTIME RESULT
 #######################################
 
-class RTResult:
+class ResultadoRT:
 	def __init__(self):
-		self.value = None
-		self.error = None
+		self.valor = None
+		self.erro = None
 
-	def register(self, res):
-		if res.error: self.error = res.error
-		return res.value
+	def registrar(self, res):
+		if res.erro: self.erro = res.erro
+		return res.valor
 
-	def success(self, value):
-		self.value = value
+	def sucesso(self, valor):
+		self.valor = valor
 		return self
 
-	def failure(self, error):
-		self.error = error
+	def falha(self, erro):
+		self.erro = erro
 		return self
+
 
 #######################################
 # VALUES
