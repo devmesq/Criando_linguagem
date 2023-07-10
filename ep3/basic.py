@@ -1,32 +1,32 @@
-alteração teste
+
 #######################################
-# IMPORTS
+# IMPORTAR
 #######################################
 
 from strings_with_arrows import *
 
 #######################################
-# CONSTANTS
+# CONSTANTES
 #######################################
 
 DIGITS = '0123456789'
 
 #######################################
-# ERRORS
+# ERRO
 #######################################
 
-class Error:
-	def __init__(self, pos_start, pos_end, error_name, details):
-		self.pos_start = pos_start
-		self.pos_end = pos_end
-		self.error_name = error_name
-		self.details = details
+class Erro:
+	def __init__(self, posicao_inicial, posicao_final, nome_erro, detalhes):
+		self.posicao_inicial = posicao_inicial
+		self.posicao_final = posicao_final
+		self.nome_erro = nome_erro
+		self.detalhes = detalhes
 	
-	def as_string(self):
-		result  = f'{self.error_name}: {self.details}\n'
-		result += f'File {self.pos_start.fn}, line {self.pos_start.ln + 1}'
-		result += '\n\n' + string_with_arrows(self.pos_start.ftxt, self.pos_start, self.pos_end)
-		return result
+	def como_string(self):
+		resultado  = f'{self.nome_erro}: {self.detalhes}\n'
+		resultado += f'Arquivo {self.posicao_inicial.fn}, linha {self.posicao_inicial.ln + 1}'
+		resultado += '\n\n' + string_com_setas(self.posicao_inicial.ftxt, self.posicao_inicial, self.posicao_final)
+		return resultado
 
 class IllegalCharError(Error):
 	def __init__(self, pos_start, pos_end, details):
