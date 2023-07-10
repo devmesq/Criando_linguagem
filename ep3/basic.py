@@ -421,57 +421,58 @@ class Contexto:
 # INTERPRETER
 #######################################
 
-class Interpreter:
-	def visit(self, node, context):
-		method_name = f'visit_{type(node).__name__}'
-		method = getattr(self, method_name, self.no_visit_method)
-		return method(node, context)
+class Interpretador:
+	def visitar(self, no, contexto):
+		nome_metodo = f'visitar_{type(no).__name__}'
+		metodo = getattr(self, nome_metodo, self.metodo_visita_padrao)
+		return metodo(no, contexto)
 
-	def no_visit_method(self, node, context):
-		raise Exception(f'No visit_{type(node).__name__} method defined')
+	def metodo_visita_padrao(self, no, contexto):
+		raise Exception(f'Nenhum método visitar_{type(no).__name__} definido')
 
 	###################################
 
-	def visit_NumberNode(self, node, context):
-		return RTResult().success(
-			Number(node.tok.value).set_context(context).set_pos(node.pos_start, node.pos_end)
+	def visitar_NoNumero(self, no, contexto):
+		return ResultadoRT().sucesso(
+			Numero(no.tok.valor).definir_contexto(contexto).definir_posicao(no.posicao_inicio, no.posicao_fim)
 		)
 
-	def visit_BinOpNode(self, node, context):
-		res = RTResult()
-		left = res.register(self.visit(node.left_node, context))
-		if res.error: return res
-		right = res.register(self.visit(node.right_node, context))
-		if res.error: return res
+	def visitar_NoOpBinario(self, no, contexto):
+		res = ResultadoRT()
+		esquerda = res.registrar(self.visitar(no.no_esquerdo, contexto))
+		if res.erro: return res
+		direita = res.registrar(self.visitar(no.no_direito, contexto))
+		if res.erro: return res
 
-		if node.op_tok.type == TT_PLUS:
-			result, error = left.added_to(right)
-		elif node.op_tok.type == TT_MINUS:
-			result, error = left.subbed_by(right)
-		elif node.op_tok.type == TT_MUL:
-			result, error = left.multed_by(right)
-		elif node.op_tok.type == TT_DIV:
-			result, error = left.dived_by(right)
+		if no.op_tok.tipo == TT_MAIS:
+			resultado, erro = esquerda.somado_com(direita)
+		elif no.op_tok.tipo == TT_MENOS:
+			resultado, erro = esquerda.subtraido_por(direita)
+		elif no.op_tok.tipo == TT_MULTIPLICACAO:
+			resultado, erro = esquerda.multiplicado_por(direita)
+		elif no.op_tok.tipo == TT_DIVISAO:
+			resultado, erro = esquerda.dividido_por(direita)
 
-		if error:
-			return res.failure(error)
+		if erro:
+			return res.falha(erro)
 		else:
-			return res.success(result.set_pos(node.pos_start, node.pos_end))
+			return res.sucesso(resultado.definir_posicao(no.posicao_inicio, no.posicao_fim))
 
-	def visit_UnaryOpNode(self, node, context):
-		res = RTResult()
-		number = res.register(self.visit(node.node, context))
-		if res.error: return res
+	def visitar_NoOpUnario(self, no, contexto):
+		res = ResultadoRT()
+		numero = res.registrar(self.visitar(no.no, contexto))
+		if res.erro: return res
 
-		error = None
+		erro = None
 
-		if node.op_tok.type == TT_MINUS:
-			number, error = number.multed_by(Number(-1))
+		if no.op_tok.tipo == TT_MENOS:
+			numero, erro = numero.multiplicado_por(Numero(-1))
 
-		if error:
-			return res.failure(error)
+		if erro:
+			return res.falha(erro)
 		else:
-			return res.success(number.set_pos(node.pos_start, node.pos_end))
+			return res.sucesso(numero.definir_posicao(no.posicao_inicio, no.posicao_fim))
+
 
 #######################################
 # RUN
