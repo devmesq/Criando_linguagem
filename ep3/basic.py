@@ -410,11 +410,12 @@ class Numero:
 # CONTEXT
 #######################################
 
-class Context:
-	def __init__(self, display_name, parent=None, parent_entry_pos=None):
-		self.display_name = display_name
-		self.parent = parent
-		self.parent_entry_pos = parent_entry_pos
+class Contexto:
+	def __init__(self, nome_exibicao, pai=None, posicao_entrada_pai=None):
+		self.nome_exibicao = nome_exibicao
+		self.pai = pai
+		self.posicao_entrada_pai = posicao_entrada_pai
+
 
 #######################################
 # INTERPRETER
