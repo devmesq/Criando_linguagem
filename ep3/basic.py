@@ -478,20 +478,20 @@ class Interpretador:
 # RUN
 #######################################
 
-def run(fn, text):
-	# Generate tokens
-	lexer = Lexer(fn, text)
-	tokens, error = lexer.make_tokens()
-	if error: return None, error
+def executar(fn, texto):
+	# Gerar tokens
+	lexer = Lexer(fn, texto)
+	tokens, erro = lexer.criar_tokens()
+	if erro: return None, erro
 	
-	# Generate AST
+	# Gerar AST
 	parser = Parser(tokens)
-	ast = parser.parse()
-	if ast.error: return None, ast.error
+	ast = parser.analisar()
+	if ast.erro: return None, ast.erro
 
-	# Run program
-	interpreter = Interpreter()
-	context = Context('<program>')
-	result = interpreter.visit(ast.node, context)
+	# Executar programa
+	interpretador = Interpretador()
+	contexto = Contexto('<programa>')
+	resultado = interpretador.visitar(ast.no, contexto)
 
-	return result.value, result.error
+	return resultado.valor, resultado.erro
