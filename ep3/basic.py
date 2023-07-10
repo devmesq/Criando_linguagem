@@ -44,7 +44,7 @@ class Erro:
 	def como_string(self):
 		resultado  = self.gerar_rastreamento()
 		resultado += f'{self.nome_erro}: {self.detalhes}'
-		resultado += '\n\n' + strings_com_setas(self.posicao_inicial.ftxt, self.posicao_inicial, self.posicao_final)
+		resultado += '\n\n' + strings_with_arrows(self.posicao_inicial.ftxt, self.posicao_inicial, self.posicao_final)
 		return resultado
 
 	def gerar_rastreamento(self):
