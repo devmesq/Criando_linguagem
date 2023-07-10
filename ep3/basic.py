@@ -235,25 +235,26 @@ class NoOpUnario:
 # PARSE RESULT
 #######################################
 
-class ParseResult:
+class ResultadoAnalise:
 	def __init__(self):
-		self.error = None
-		self.node = None
+		self.erro = None
+		self.no = None
 
-	def register(self, res):
-		if isinstance(res, ParseResult):
-			if res.error: self.error = res.error
-			return res.node
+	def registrar(self, res):
+		if isinstance(res, ResultadoAnalise):
+			if res.erro: self.erro = res.erro
+			return res.no
 
 		return res
 
-	def success(self, node):
-		self.node = node
+	def sucesso(self, no):
+		self.no = no
 		return self
 
-	def failure(self, error):
-		self.error = error
+	def falha(self, erro):
+		self.erro = erro
 		return self
+
 
 #######################################
 # PARSER
