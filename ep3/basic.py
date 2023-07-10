@@ -260,26 +260,27 @@ class ResultadoAnalise:
 # PARSER
 #######################################
 
-class Parser:
+class AnalisadorSintatico:
 	def __init__(self, tokens):
 		self.tokens = tokens
-		self.tok_idx = -1
-		self.advance()
+		self.indice_tok = -1
+		self.avancar()
 
-	def advance(self, ):
-		self.tok_idx += 1
-		if self.tok_idx < len(self.tokens):
-			self.current_tok = self.tokens[self.tok_idx]
-		return self.current_tok
+	def avancar(self):
+		self.indice_tok += 1
+		if self.indice_tok < len(self.tokens):
+			self.token_atual = self.tokens[self.indice_tok]
+		return self.token_atual
 
-	def parse(self):
+	def analisar(self):
 		res = self.expr()
-		if not res.error and self.current_tok.type != TT_EOF:
-			return res.failure(InvalidSyntaxError(
-				self.current_tok.pos_start, self.current_tok.pos_end,
-				"Expected '+', '-', '*' or '/'"
+		if not res.erro and self.token_atual.tipo != TT_FIM_DE_ARQUIVO:
+			return res.falha(ErroSintaxeInvalida(
+				self.token_atual.posicao_inicio, self.token_atual.posicao_fim,
+				"Esperado '+', '-', '*' ou '/'"
 			))
 		return res
+
 
 	###################################
 
