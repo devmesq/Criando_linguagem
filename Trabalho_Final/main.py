@@ -15,6 +15,7 @@ TT_ABRE_PARENTESES = "ABRE_PARENTESES"
 TT_FECHA_PARENTESES = "FECHA_PARENTESES"
 TT_FIM_DE_ARQUIVO = "FIM_DE_ARQUIVO"
 
+
 class Token:
     def __init__(self, tipo, valor=None, posicao_inicio=None, posicao_fim=None):
         self.tipo = tipo
@@ -32,6 +33,7 @@ class Token:
         if self.valor:
             return f"{self.tipo}:{self.valor}"
         return f"{self.tipo}"
+
 
 # ERROS
 class Erro:
@@ -51,7 +53,8 @@ class Erro:
         )
         return resultado
 
-# POSICAO
+
+# POSIÃO
 class Posicao:
     def __init__(self, idx, ln, col, fn, ftxt):
         self.idx = idx
@@ -72,6 +75,7 @@ class Posicao:
     def copiar(self):
         return Posicao(self.idx, self.ln, self.col, self.fn, self.ftxt)
 
+
 # LEXEMA
 class Lexer:
     def __init__(self, fn, texto):
@@ -86,6 +90,7 @@ class Lexer:
         self.caractere_atual = (
             self.texto[self.pos.idx] if self.pos.idx < len(self.texto) else None
         )
+
     def criar_tokens(self):
         tokens = []
 
@@ -115,7 +120,7 @@ class Lexer:
 
         tokens.append(Token(TT_FIM_DE_ARQUIVO, pos_start=self.pos))
         return tokens, None
-    
+
     def criar_numero(self):
         num_str = ""
         contagem_ponto = 0
@@ -137,7 +142,8 @@ class Lexer:
             return Token(TT_FLOAT, float(num_str), pos_start, self.pos)
         else:
             return Token(TT_INT, int(num_str), pos_start, self.pos)
-        
+
+
 # NÓS
 class NoNumero:
     def __init__(self, tok):
@@ -148,6 +154,7 @@ class NoNumero:
 
     def __repr__(self):
         return f"{self.tok}"
+
 
 class NoOpBinario:
     def __init__(self, no_esquerdo, op_tok, no_direito):
@@ -173,6 +180,7 @@ class NoOpUnario:
     def __repr__(self):
         return f"({self.op_tok}, {self.no})"
 
+
 # RESULTADO
 class ResultadoAnalise:
     def __init__(self):
@@ -193,6 +201,7 @@ class ResultadoAnalise:
     def falha(self, erro):
         self.erro = erro
         return self
+
 
 # PARSER
 class AnalisadorSintatico:
@@ -253,6 +262,7 @@ class AnalisadorSintatico:
 
         return res.sucesso(esquerda)
 
+
 # VALORES
 class Numero:
     def __init__(self, valor):
@@ -300,12 +310,14 @@ class Numero:
     def __repr__(self):
         return str(self.valor)
 
+
 # CONTEXTO
 class Contexto:
     def __init__(self, nome_exibicao, pai=None, posicao_entrada_pai=None):
         self.nome_exibicao = nome_exibicao
         self.pai = pai
         self.posicao_entrada_pai = posicao_entrada_pai
+
 
 # INTERPRETETADOR
 class Interpretador:
@@ -366,6 +378,7 @@ class Interpretador:
             return res.sucesso(
                 numero.definir_posicao(no.posicao_inicio, no.posicao_fim)
             )
+
 
 # EXECUTAR
 def executar(fn, texto):
