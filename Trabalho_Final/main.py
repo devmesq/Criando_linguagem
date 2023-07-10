@@ -54,7 +54,7 @@ class Erro:
         return resultado
 
 
-# POSIÃO
+# POSIÇÃO
 class Posicao:
     def __init__(self, idx, ln, col, fn, ftxt):
         self.idx = idx
