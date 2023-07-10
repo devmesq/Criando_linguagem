@@ -6,52 +6,6 @@ from strings_with_arrows import *
 
 DIGITOS = '0123456789'
 
-# ERROS
-
-class Erro:
-	def __init__(self, posicao_inicial, posicao_final, nome_erro, detalhes):
-		self.posicao_inicial = posicao_inicial
-		self.posicao_final = posicao_final
-		self.nome_erro = nome_erro
-		self.detalhes = detalhes
-	
-	def como_string(self):
-		resultado  = f'{self.nome_erro}: {self.detalhes}\n'
-		resultado += f'Arquivo {self.posicao_inicial.fn}, linha {self.posicao_inicial.ln + 1}'
-		resultado += '\n\n' + string_with_arrows(self.posicao_inicial.ftxt, self.posicao_inicial, self.posicao_final)
-		return resultado
-
-class ErroCaractereIlegal(Erro):
-	def __init__(self, posicao_inicial, posicao_final, detalhes):
-		super().__init__(posicao_inicial, posicao_final, 'Caractere Ilegal', detalhes)
-
-class ErroSintaxeInvalida(Erro):
-	def __init__(self, posicao_inicial, posicao_final, detalhes=''):
-		super().__init__(posicao_inicial, posicao_final, 'Sintaxe Inválida', detalhes)
-
-# POSICAO
-class Posicao:
-	def __init__(self, idx, ln, col, fn, ftxt):
-		self.idx = idx
-		self.ln = ln
-		self.col = col
-		self.fn = fn
-		self.ftxt = ftxt
-
-	def avancar(self, caractere_atual=None):
-		self.idx += 1
-		self.col += 1
-
-		if caractere_atual == '\n':
-			self.ln += 1
-			self.col = 0
-
-		return self
-
-	def copiar(self):
-		return Posicao(self.idx, self.ln, self.col, self.fn, self.ftxt)
-
-
 # DEFININDO OS TOKENS
 
 TT_FLOAT   = 'FLOAT'
@@ -81,6 +35,46 @@ class Token:
 		if self.valor:
 			return f'{self.tipo}:{self.valor}'
 		return f'{self.tipo}'
+	
+# ERROS
+
+class Erro:
+	def __init__(self, posicao_inicial, posicao_final, nome_erro, detalhes):
+		self.posicao_inicial = posicao_inicial
+		self.posicao_final = posicao_final
+		self.nome_erro = nome_erro
+		self.detalhes = detalhes
+	
+	def como_string(self):
+		resultado  = f'{self.nome_erro}: {self.detalhes}\n'
+		resultado += f'Arquivo {self.posicao_inicial.fn}, linha {self.posicao_inicial.ln + 1}'
+		resultado += '\n\n' + string_with_arrows(self.posicao_inicial.ftxt, self.posicao_inicial, self.posicao_final)
+		return resultado
+
+
+# POSICAO
+class Posicao:
+	def __init__(self, idx, ln, col, fn, ftxt):
+		self.idx = idx
+		self.ln = ln
+		self.col = col
+		self.fn = fn
+		self.ftxt = ftxt
+
+	def avancar(self, caractere_atual=None):
+		self.idx += 1
+		self.col += 1
+
+		if caractere_atual == '\n':
+			self.ln += 1
+			self.col = 0
+
+		return self
+
+	def copiar(self):
+		return Posicao(self.idx, self.ln, self.col, self.fn, self.ftxt)
+
+
 
 # LEXER
 
@@ -122,11 +116,6 @@ class Lexer:
 			elif self.caractere_atual == ')':
 				tokens.append(Token(TT_FECHA_PARENTESES, pos_start=self.pos))
 				self.avancar()
-			else:
-				pos_start = self.pos.copiar()
-				char = self.caractere_atual
-				self.avancar()
-				return [], ErroCaractereIlegal(pos_start, self.pos, "'" + char + "'")
 
 		tokens.append(Token(TT_FIM_DE_ARQUIVO, pos_start=self.pos))
 		return tokens, None
@@ -186,10 +175,7 @@ class NoOpUnario:
 	def __repr__(self):
 		return f'({self.op_tok}, {self.no})'
 
-
-#######################################
 # PARSE RESULT
-#######################################
 
 class ResultadoAnalise:
 	def __init__(self):
@@ -210,11 +196,8 @@ class ResultadoAnalise:
 	def falha(self, erro):
 		self.erro = erro
 		return self
-
-
-#######################################
+	
 # PARSER
-#######################################
 
 class AnalisadorSintatico:
 	def __init__(self, tokens):
@@ -227,15 +210,6 @@ class AnalisadorSintatico:
 		if self.indice_tok < len(self.tokens):
 			self.token_atual = self.tokens[self.indice_tok]
 		return self.token_atual
-
-	def analisar(self):
-		res = self.expr()
-		if not res.erro and self.token_atual.tipo != TT_FIM_DE_ARQUIVO:
-			return res.falha(ErroSintaxeInvalida(
-				self.token_atual.posicao_inicio, self.token_atual.posicao_fim,
-				"Esperado '+', '-', '*' ou '/'"
-			))
-		return res
 
 
 	###################################
@@ -261,16 +235,6 @@ class AnalisadorSintatico:
 			if self.token_atual.tipo == TT_FECHA_PARENTESES:
 				res.registrar(self.avancar())
 				return res.sucesso(expr)
-			else:
-				return res.falha(ErroSintaxeInvalida(
-					self.token_atual.posicao_inicio, self.token_atual.posicao_fim,
-					"Esperado ')'"
-				))
-
-		return res.falha(ErroSintaxeInvalida(
-			tok.posicao_inicio, tok.posicao_fim,
-			"Esperado número inteiro ou decimal"
-		))
 
 	def termo(self):
 		return self.op_bin(self.fator, (TT_MULTIPLICACAO, TT_DIVISAO))
@@ -294,31 +258,7 @@ class AnalisadorSintatico:
 
 		return res.sucesso(esquerda)
 
-#######################################
-# RUNTIME RESULT
-#######################################
-
-class ResultadoRT:
-	def __init__(self):
-		self.valor = None
-		self.erro = None
-
-	def registrar(self, res):
-		if res.erro: self.erro = res.erro
-		return res.valor
-
-	def sucesso(self, valor):
-		self.valor = valor
-		return self
-
-	def falha(self, erro):
-		self.erro = erro
-		return self
-
-
-#######################################
-# VALUES
-#######################################
+# VALORES
 
 class Numero:
 	def __init__(self, valor):
@@ -349,22 +289,12 @@ class Numero:
 
 	def dividido_por(self, outro):
 		if isinstance(outro, Numero):
-			if outro.valor == 0:
-				return None, ErroTempoExecucao(
-					outro.posicao_inicial, outro.posicao_final,
-					'Divisão por zero',
-					self.contexto
-				)
-
 			return Numero(self.valor / outro.valor).definir_contexto(self.contexto), None
 
 	def __repr__(self):
 		return str(self.valor)
 
-
-#######################################
-# CONTEXT
-#######################################
+# CONTEXTO
 
 class Contexto:
 	def __init__(self, nome_exibicao, pai=None, posicao_entrada_pai=None):
@@ -373,9 +303,7 @@ class Contexto:
 		self.posicao_entrada_pai = posicao_entrada_pai
 
 
-#######################################
-# INTERPRETER
-#######################################
+# INTERPRETETADOR
 
 class Interpretador:
 	def visitar(self, no, contexto):
@@ -429,10 +357,7 @@ class Interpretador:
 		else:
 			return res.sucesso(numero.definir_posicao(no.posicao_inicio, no.posicao_fim))
 
-
-#######################################
 # RUN
-#######################################
 
 def executar(fn, texto):
 	# Gerar tokens
