@@ -284,59 +284,59 @@ class AnalisadorSintatico:
 
 	###################################
 
-	def factor(self):
-		res = ParseResult()
-		tok = self.current_tok
+	def fator(self):
+		res = ResultadoAnalise()
+		tok = self.token_atual
 
-		if tok.type in (TT_PLUS, TT_MINUS):
-			res.register(self.advance())
-			factor = res.register(self.factor())
-			if res.error: return res
-			return res.success(UnaryOpNode(tok, factor))
+		if tok.tipo in (TT_MAIS, TT_MENOS):
+			res.registrar(self.avancar())
+			fator = res.registrar(self.fator())
+			if res.erro: return res
+			return res.sucesso(NoOpUnario(tok, fator))
 		
-		elif tok.type in (TT_INT, TT_FLOAT):
-			res.register(self.advance())
-			return res.success(NumberNode(tok))
+		elif tok.tipo in (TT_INT, TT_FLOAT):
+			res.registrar(self.avancar())
+			return res.sucesso(NoNumero(tok))
 
-		elif tok.type == TT_LPAREN:
-			res.register(self.advance())
-			expr = res.register(self.expr())
-			if res.error: return res
-			if self.current_tok.type == TT_RPAREN:
-				res.register(self.advance())
-				return res.success(expr)
+		elif tok.tipo == TT_ABRE_PARENTESES:
+			res.registrar(self.avancar())
+			expr = res.registrar(self.expr())
+			if res.erro: return res
+			if self.token_atual.tipo == TT_FECHA_PARENTESES:
+				res.registrar(self.avancar())
+				return res.sucesso(expr)
 			else:
-				return res.failure(InvalidSyntaxError(
-					self.current_tok.pos_start, self.current_tok.pos_end,
-					"Expected ')'"
+				return res.falha(ErroSintaxeInvalida(
+					self.token_atual.posicao_inicio, self.token_atual.posicao_fim,
+					"Esperado ')'"
 				))
 
-		return res.failure(InvalidSyntaxError(
-			tok.pos_start, tok.pos_end,
-			"Expected int or float"
+		return res.falha(ErroSintaxeInvalida(
+			tok.posicao_inicio, tok.posicao_fim,
+			"Esperado número inteiro ou decimal"
 		))
 
-	def term(self):
-		return self.bin_op(self.factor, (TT_MUL, TT_DIV))
+	def termo(self):
+		return self.op_bin(self.fator, (TT_MULTIPLICACAO, TT_DIVISAO))
 
 	def expr(self):
-		return self.bin_op(self.term, (TT_PLUS, TT_MINUS))
+		return self.op_bin(self.termo, (TT_MAIS, TT_MENOS))
 
 	###################################
 
-	def bin_op(self, func, ops):
-		res = ParseResult()
-		left = res.register(func())
-		if res.error: return res
+	def op_bin(self, func, ops):
+		res = ResultadoAnalise()
+		esquerda = res.registrar(func())
+		if res.erro: return res
 
-		while self.current_tok.type in ops:
-			op_tok = self.current_tok
-			res.register(self.advance())
-			right = res.register(func())
-			if res.error: return res
-			left = BinOpNode(left, op_tok, right)
+		while self.token_atual.tipo in ops:
+			op_tok = self.token_atual
+			res.registrar(self.avancar())
+			direita = res.registrar(func())
+			if res.erro: return res
+			esquerda = NoOpBinario(esquerda, op_tok, direita)
 
-		return res.success(left)
+		return res.sucesso(esquerda)
 
 #######################################
 # RUNTIME RESULT
