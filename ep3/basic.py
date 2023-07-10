@@ -364,46 +364,47 @@ class ResultadoRT:
 # VALUES
 #######################################
 
-class Number:
-	def __init__(self, value):
-		self.value = value
-		self.set_pos()
-		self.set_context()
+class Numero:
+	def __init__(self, valor):
+		self.valor = valor
+		self.definir_posicao()
+		self.definir_contexto()
 
-	def set_pos(self, pos_start=None, pos_end=None):
-		self.pos_start = pos_start
-		self.pos_end = pos_end
+	def definir_posicao(self, posicao_inicial=None, posicao_final=None):
+		self.posicao_inicial = posicao_inicial
+		self.posicao_final = posicao_final
 		return self
 
-	def set_context(self, context=None):
-		self.context = context
+	def definir_contexto(self, contexto=None):
+		self.contexto = contexto
 		return self
 
-	def added_to(self, other):
-		if isinstance(other, Number):
-			return Number(self.value + other.value).set_context(self.context), None
+	def somado_com(self, outro):
+		if isinstance(outro, Numero):
+			return Numero(self.valor + outro.valor).definir_contexto(self.contexto), None
 
-	def subbed_by(self, other):
-		if isinstance(other, Number):
-			return Number(self.value - other.value).set_context(self.context), None
+	def subtraido_por(self, outro):
+		if isinstance(outro, Numero):
+			return Numero(self.valor - outro.valor).definir_contexto(self.contexto), None
 
-	def multed_by(self, other):
-		if isinstance(other, Number):
-			return Number(self.value * other.value).set_context(self.context), None
+	def multiplicado_por(self, outro):
+		if isinstance(outro, Numero):
+			return Numero(self.valor * outro.valor).definir_contexto(self.contexto), None
 
-	def dived_by(self, other):
-		if isinstance(other, Number):
-			if other.value == 0:
-				return None, RTError(
-					other.pos_start, other.pos_end,
-					'Division by zero',
-					self.context
+	def dividido_por(self, outro):
+		if isinstance(outro, Numero):
+			if outro.valor == 0:
+				return None, ErroTempoExecucao(
+					outro.posicao_inicial, outro.posicao_final,
+					'Divisão por zero',
+					self.contexto
 				)
 
-			return Number(self.value / other.value).set_context(self.context), None
+			return Numero(self.valor / outro.valor).definir_contexto(self.contexto), None
 
 	def __repr__(self):
-		return str(self.value)
+		return str(self.valor)
+
 
 #######################################
 # CONTEXT
