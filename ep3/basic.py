@@ -3,7 +3,7 @@
 # IMPORTAR
 #######################################
 
-from strings_com_setas import *
+from strings_with_arrows import *
 
 #######################################
 # CONSTANTES
