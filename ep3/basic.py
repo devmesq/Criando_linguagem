@@ -90,32 +90,36 @@ class Posicao:
 # TOKENS
 #######################################
 
-TT_INT			= 'INT'
-TT_FLOAT    = 'FLOAT'
-TT_PLUS     = 'PLUS'
-TT_MINUS    = 'MINUS'
-TT_MUL      = 'MUL'
-TT_DIV      = 'DIV'
-TT_LPAREN   = 'LPAREN'
-TT_RPAREN   = 'RPAREN'
-TT_EOF			= 'EOF'
+
+
+TT_INT     = 'INT'
+TT_FLOAT   = 'FLOAT'
+TT_PLUS    = 'MAIS'
+TT_MINUS   = 'MENOS'
+TT_MUL     = 'MULTIPLICACAO'
+TT_DIV     = 'DIVISAO'
+TT_LPAREN  = 'ABRE_PARENTESES'
+TT_RPAREN  = 'FECHA_PARENTESES'
+TT_EOF     = 'FIM_DE_ARQUIVO'
 
 class Token:
-	def __init__(self, type_, value=None, pos_start=None, pos_end=None):
-		self.type = type_
-		self.value = value
+	def __init__(self, tipo, valor=None, posicao_inicio=None, posicao_fim=None):
+		self.tipo = tipo
+		self.valor = valor
 
-		if pos_start:
-			self.pos_start = pos_start.copy()
-			self.pos_end = pos_start.copy()
-			self.pos_end.advance()
+		if posicao_inicio:
+			self.posicao_inicio = posicao_inicio.copiar()
+			self.posicao_fim = posicao_inicio.copiar()
+			self.posicao_fim.avancar()
 
-		if pos_end:
-			self.pos_end = pos_end
+		if posicao_fim:
+			self.posicao_fim = posicao_fim
 	
 	def __repr__(self):
-		if self.value: return f'{self.type}:{self.value}'
-		return f'{self.type}'
+		if self.valor:
+			return f'{self.tipo}:{self.valor}'
+		return f'{self.tipo}'
+
 
 #######################################
 # LEXER
