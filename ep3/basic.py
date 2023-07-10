@@ -172,7 +172,7 @@ class Lexer:
 		tokens.append(Token(TT_FIM_DE_ARQUIVO, pos_start=self.pos))
 		return tokens, None
 
-	def criar_numero(self):
+		def criar_numero(self):
 		num_str = ''
 		contagem_ponto = 0
 		pos_start = self.pos.copiar()
@@ -197,38 +197,39 @@ class Lexer:
 # NODES
 #######################################
 
-class NumberNode:
+class NoNumero:
 	def __init__(self, tok):
 		self.tok = tok
 
-		self.pos_start = self.tok.pos_start
-		self.pos_end = self.tok.pos_end
+		self.posicao_inicio = self.tok.posicao_inicio
+		self.posicao_fim = self.tok.posicao_fim
 
 	def __repr__(self):
 		return f'{self.tok}'
 
-class BinOpNode:
-	def __init__(self, left_node, op_tok, right_node):
-		self.left_node = left_node
+class NoOpBinario:
+	def __init__(self, no_esquerdo, op_tok, no_direito):
+		self.no_esquerdo = no_esquerdo
 		self.op_tok = op_tok
-		self.right_node = right_node
+		self.no_direito = no_direito
 
-		self.pos_start = self.left_node.pos_start
-		self.pos_end = self.right_node.pos_end
+		self.posicao_inicio = self.no_esquerdo.posicao_inicio
+		self.posicao_fim = self.no_direito.posicao_fim
 
 	def __repr__(self):
-		return f'({self.left_node}, {self.op_tok}, {self.right_node})'
+		return f'({self.no_esquerdo}, {self.op_tok}, {self.no_direito})'
 
-class UnaryOpNode:
-	def __init__(self, op_tok, node):
+class NoOpUnario:
+	def __init__(self, op_tok, no):
 		self.op_tok = op_tok
-		self.node = node
+		self.no = no
 
-		self.pos_start = self.op_tok.pos_start
-		self.pos_end = node.pos_end
+		self.posicao_inicio = self.op_tok.posicao_inicio
+		self.posicao_fim = no.posicao_fim
 
 	def __repr__(self):
-		return f'({self.op_tok}, {self.node})'
+		return f'({self.op_tok}, {self.no})'
+
 
 #######################################
 # PARSE RESULT
