@@ -1,26 +1,28 @@
-def string_with_arrows(text, pos_start, pos_end):
-    result = ''
+def string_com_setas(texto, posicao_inicial, posicao_final):
+    resultado = ''
 
-    # Calculate indices
-    idx_start = max(text.rfind('\n', 0, pos_start.idx), 0)
-    idx_end = text.find('\n', idx_start + 1)
-    if idx_end < 0: idx_end = len(text)
+    # Calcular índices
+    idx_inicio = max(texto.rfind('\n', 0, posicao_inicial.idx), 0)
+    idx_fim = texto.find('\n', idx_inicio + 1)
+    if idx_fim < 0:
+        idx_fim = len(texto)
     
-    # Generate each line
-    line_count = pos_end.ln - pos_start.ln + 1
-    for i in range(line_count):
-        # Calculate line columns
-        line = text[idx_start:idx_end]
-        col_start = pos_start.col if i == 0 else 0
-        col_end = pos_end.col if i == line_count - 1 else len(line) - 1
+    # Gerar cada linha
+    quantidade_linhas = posicao_final.ln - posicao_inicial.ln + 1
+    for i in range(quantidade_linhas):
+        # Calcular colunas da linha
+        linha = texto[idx_inicio:idx_fim]
+        coluna_inicio = posicao_inicial.col if i == 0 else 0
+        coluna_fim = posicao_final.col if i == quantidade_linhas - 1 else len(linha) - 1
 
-        # Append to result
-        result += line + '\n'
-        result += ' ' * col_start + '^' * (col_end - col_start)
+        # Adicionar ao resultado
+        resultado += linha + '\n'
+        resultado += ' ' * coluna_inicio + '^' * (coluna_fim - coluna_inicio)
 
-        # Re-calculate indices
-        idx_start = idx_end
-        idx_end = text.find('\n', idx_start + 1)
-        if idx_end < 0: idx_end = len(text)
+        # Recalcular índices
+        idx_inicio = idx_fim
+        idx_fim = texto.find('\n', idx_inicio + 1)
+        if idx_fim < 0:
+            idx_fim = len(texto)
 
-    return result.replace('\t', '')
+    return resultado.replace('\t', '')
